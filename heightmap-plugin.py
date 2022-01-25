@@ -16,6 +16,28 @@ from bpy.types import Panel, Operator, GizmoGroup
 from bpy.utils import register_class, unregister_class
 from bpy.props import IntProperty, FloatProperty, StringProperty, EnumProperty, IntVectorProperty
 
+class RecenterPivots(bpy.types.Operator):
+    "Recenter Pivots"
+    bl_idname = "object.recenter"
+    bl_label = "Recenters pivots for selected tiles"
+    
+    def execute(self, context):
+        bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
+        return {'FINISHED'}
+    
+class StreamlineResults(bpy.types.Operator):
+    "Do all the tasks in one step"
+    bl_idname = "object.streamline"
+    bl_label = "Streamline tasks"
+    
+    def execute(self, context):
+        bpy.ops.object.create_tiles()
+        bpy.ops.object.add_modifiers()
+        bpy.ops.object.apply_modifiers()
+        bpy.ops.object.recenter()
+        
+        return {'FINISHED'}
+    
 class DeleteResults(bpy.types.Operator):
     "Delete selected meshes"
     bl_idname = "object.delete_results"
@@ -132,6 +154,7 @@ class CreateTiles(bpy.types.Operator):
         
         bpy.ops.object.mode_set(mode="EDIT")
         
+        
         if(scene.tiles-1 > 0):
             bpy.ops.mesh.subdivide(number_cuts=scene.tiles-1)
             bpy.ops.mesh.edge_split()
@@ -140,8 +163,7 @@ class CreateTiles(bpy.types.Operator):
         bpy.ops.object.mode_set(mode="OBJECT")
         
         bpy.ops.ed.undo_push()
-        
-        
+                
         
         return {'FINISHED'}
 
@@ -167,6 +189,7 @@ class PluginPanel(bpy.types.Panel):
         mesh_creation_box.prop(scene, "size")
         mesh_creation_box.prop(scene, "height_mode")
         mesh_creation_box.prop(scene, "tiles")
+        
         mesh_modifiers_box.prop(scene, "sub_pre")
         mesh_modifiers_box.prop(scene, "sub_post")
         mesh_modifiers_box.prop(scene, "height_map")
@@ -181,11 +204,16 @@ class PluginPanel(bpy.types.Panel):
         
         mesh_modifiers_box.label(text="Poly Count: " + str(4 ** (scene.sub_pre + scene.sub_post) * (scene.tiles)**2 * 2))    
          
+        layout.operator(RecenterPivots.bl_idname, text="Recenter Pivots")
+        layout.operator(StreamlineResults.bl_idname, text="Do All")
+         
 classes = [
     CreateTiles,
     AddModifiers,
     ApplyModifiers,
     DeleteResults,
+    StreamlineResults,
+    RecenterPivots,
     PluginPanel
 ]
  
