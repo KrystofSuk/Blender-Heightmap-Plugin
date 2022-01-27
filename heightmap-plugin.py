@@ -11,10 +11,46 @@ bl_info = {
 }
 
 
-import bpy
+import bpy, os
 from bpy.types import Panel, Operator, GizmoGroup
 from bpy.utils import register_class, unregister_class
-from bpy.props import IntProperty, FloatProperty, StringProperty, EnumProperty, IntVectorProperty
+from bpy.props import IntProperty, FloatProperty, StringProperty, EnumProperty, IntVectorProperty, BoolProperty
+from bpy_extras.io_utils import ImportHelper
+
+
+class OT_TestOpenFilebrowser(Operator, ImportHelper):
+
+    bl_idname = "test.open_filebrowser"
+    bl_label = "Open the file browser (yay)"
+    
+    filter_glob: StringProperty(
+        default='*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.bmp',
+        options={'HIDDEN'}
+    )
+
+    def execute(self, context):
+        """Do something with the selected file(s)."""
+
+        filename, extension = os.path.splitext(self.filepath)
+        
+        print('Selected file:', self.filepath)
+        print('File name:', filename)
+        print('File extension:', extension)
+        
+        scene = bpy.context.scene
+        scene.height_map = self.filepath
+        
+        return {'FINISHED'}
+    
+class OpenFile(bpy.types.Operator):
+    "Opens File Explorer"
+    bl_idname = "object.open_file_explorer"
+    bl_label = "Opens File Explorer"
+    
+    def execute(self, context):
+        bpy.ops.test.open_filebrowser('INVOKE_DEFAULT')
+        return {'FINISHED'}
+        
 
 class RecenterPivots(bpy.types.Operator):
     "Recenter Pivots"
@@ -192,9 +228,11 @@ class PluginPanel(bpy.types.Panel):
         mesh_creation_box.prop(scene, "tiles")
         
         mesh_modifiers_box.prop(scene, "sub_pre")
-        mesh_modifiers_box.prop(scene, "sub_post")
-        mesh_modifiers_box.prop(scene, "height_map")
-
+        mesh_modifiers_box.prop(scene, "sub_post")    
+        
+        row = mesh_modifiers_box.row()
+        row.prop(scene, "height_map")        
+        row.operator(OpenFile.bl_idname, text="Select Map")
 
         mesh_creation_box.operator(CreateTiles.bl_idname, text="Create Tiles")
         mesh_creation_box.operator(DeleteResults.bl_idname, text="Delete")
@@ -215,7 +253,9 @@ classes = [
     DeleteResults,
     StreamlineResults,
     RecenterPivots,
-    PluginPanel
+    PluginPanel,
+    OT_TestOpenFilebrowser,
+    OpenFile
 ]
  
 def register():
