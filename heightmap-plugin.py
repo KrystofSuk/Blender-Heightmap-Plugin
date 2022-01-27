@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Heightmap Plugin",
     "author": "Krystof Suk",
-    "version": (1, 0, 2),
+    "version": (1, 0, 3),
     "blender": (2, 80, 0),
     "location": "View3D > Heightmap Plugin",
     "description": "",
