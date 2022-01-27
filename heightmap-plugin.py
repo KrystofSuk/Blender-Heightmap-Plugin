@@ -68,7 +68,8 @@ class AddModifiers(bpy.types.Operator):
         bpy.ops.image.open(filepath=scene.height_map)
         bpy.data.images[file].pack()
         heightTex.image = bpy.data.images[file]
-        heightTex.extension = 'EXTEND'
+        heightTex.extension = 'EXTEND'        
+        heightTex.image.colorspace_settings.name = "Raw"
         
         i = 0
         for obj in sel:
