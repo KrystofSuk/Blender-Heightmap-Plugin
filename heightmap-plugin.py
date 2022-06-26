@@ -1,12 +1,12 @@
 bl_info = {
     "name": "Heightmap Plugin",
     "author": "Krystof Suk",
-    "version": (1, 0, 3),
+    "version": (1, 0, 4),
     "blender": (2, 80, 0),
-    "location": "View3D > Heightmap Plugin",
-    "description": "",
+    "location": "View3D > Heightmap",
+    "description": "Small plugin for importing heightmaps and making tiles for further use in Unreal or Blender.",
     "warning": "",
-    "doc_url": "",
+    "doc_url": "https://github.com/KrystofSuk/Blender-Heightmap-Plugin",
     "category": "Object",
 }
 
@@ -21,7 +21,7 @@ from bpy_extras.io_utils import ImportHelper
 class OT_TestOpenFilebrowser(Operator, ImportHelper):
 
     bl_idname = "test.open_filebrowser"
-    bl_label = "Open the file browser (yay)"
+    bl_label = "Open the file browser"
     
     filter_glob: StringProperty(
         default='*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.bmp',
